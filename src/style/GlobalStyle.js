@@ -1,13 +1,17 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
+	*{
+		background: #0E0E13;
+	}
 	button {
 		height: 52px;
-		min-width: 300px;
+		width: 300px;
 		background: #FF4791;	
 		border-radius: 8px;
 		border-style: none;
 		font-family: 'Roboto';
+		font-weight: 700;
 		font-size: 14px;
 		display: flex;
 		align-items: center;
@@ -17,18 +21,18 @@ const GlobalStyle = createGlobalStyle`
 		margin-top: 8px;
 	}
 	input {
-		min-width: 300px;
+		width: 272px;
 		height: 52px;
+		display: flex;
+		align-items: center;
 		background: #FFFFFF;
 		border-radius: 8px;
 		border-style: none;
-		padding: 0 14px;
-		color: #DBDBDB;
+		color: #7E7E7E;
 		font-family: 'Roboto';
-		font-size: 20px;
-		display: flex;
-		align-items: center;
+		font-size: 14px;
 		margin-bottom: 16px;
+		padding: 0 14px;
 		&::placeholder{
 			color: #7E7E7E;
 		}

@@ -12,14 +12,12 @@ export default function App() {
       <ResetStyle />
       <GlobalStyle />
       <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/sign-up" element={<SignUpPage />} />
-            <Route path="/subscriptions" element={<SubscriptionsPage />} />
-            <Route path="/home" element={<HomePage />} />
-          </Routes>
-        </AuthProvider>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/sign-up" element={<SignUpPage />} />
+          <Route path="/subscriptions" element={<SubscriptionsPage />} />
+          <Route path="/home" element={<HomePage />} />
+        </Routes>
       </BrowserRouter>
     </>
   );
