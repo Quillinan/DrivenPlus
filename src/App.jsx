@@ -5,6 +5,7 @@ import LoginPage from "./components/Login/LoginPage";
 import SignUpPage from "./components/Sign-up/Sign-upPage";
 import SubscriptionsPage from "./components/Subscriptions/SubscriptionsPage";
 import HomePage from "./components/Home/HomePage";
+import SubscriptionDetailsPage from "./components/SubscriptionDetails/SubscriptionDetailsPage";
 
 export default function App() {
   return (
@@ -16,6 +17,10 @@ export default function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/subscriptions" element={<SubscriptionsPage />} />
+          <Route
+            path="/subscriptions/:ID_DO_PLANO"
+            element={<SubscriptionDetailsPage />}
+          />
           <Route path="/home" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
