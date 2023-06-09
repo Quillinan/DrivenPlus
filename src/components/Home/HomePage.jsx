@@ -2,6 +2,8 @@ import styled from 'styled-components';
 
 export default function HomePage() {
   const userPlan = 1;
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  console.log(storedUser);
 
   const renderAdditionalButtons = () => {
     if (userPlan === 2) {

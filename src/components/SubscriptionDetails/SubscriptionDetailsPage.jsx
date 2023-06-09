@@ -1,122 +1,205 @@
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function SubscriptionDetailsPage() {
   const { ID_DO_PLANO } = useParams();
   const [showPopup, setShowPopup] = useState(false);
   const [subscriptionInfo, setSubscriptionInfo] = useState({});
+  const [loading, setLoading] = useState(true);
+  const token = JSON.parse(localStorage.getItem('user')).token;
+  const [cardInfo, setCardInfo] = useState({
+    cardName: '',
+    cardNumber: '',
+    securityNumber: 0,
+    expirationDate: '',
+  });
+  const navigate = useNavigate();
+  console.log(ID_DO_PLANO);
 
-  const plans = [
-    {
-      id: '1',
-      img: '/DrivenPlus1.svg',
-      price: '39,99',
-      benefits: 'Brindes exclusivos,Materiais bônus de web',
-    },
-    {
-      id: '2',
-      img: '/DrivenPlus2.svg',
-      price: '69,99',
-      benefits: 'Aulas bônus de tech',
-    },
-    {
-      id: '3',
-      img: '/DrivenPlus3.svg',
-      price: '99,99',
-      benefits: 'Mentorias personalizadas',
-    },
-  ];
+  useEffect(() => {
+    const fetchSubscriptionInfo = async () => {
+      try {
+        const response = await fetch(
+          `https://mock-api.driven.com.br/api/v4/driven-plus/subscriptions/memberships/${ID_DO_PLANO}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setSubscriptionInfo(data);
+        } else {
+          console.error('Erro na requisição');
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro na requisição', error);
+        setLoading(false);
+      }
+    };
 
-  const selectedPlan = plans.find((plan) => plan.id === ID_DO_PLANO);
-
-  let benefitsList = [];
-  if (selectedPlan) {
-    for (let i = 0; i < selectedPlan.id; i++) {
-      const planBenefits = plans[i].benefits
-        .split(',')
-        .map((benefit) => benefit.trim());
-      benefitsList.push(...planBenefits);
-    }
-  }
+    fetchSubscriptionInfo();
+  }, [ID_DO_PLANO, token]);
 
   const handleSubscribe = () => {
     setShowPopup(true);
-    setSubscriptionInfo(selectedPlan);
   };
 
-  const handleConfirmSubscription = () => {
-    // Lógica para confirmar a assinatura
-    setShowPopup(false);
+  const handleReturnClick = () => {
+    navigate('/subscriptions');
   };
+
+  const handleCardInputChange = (e) => {
+    setCardInfo({ ...cardInfo, [e.target.name]: e.target.value });
+  };
+
+  const handleConfirmSubscription = async () => {
+    console.log(
+      JSON.stringify({
+        membershipId: ID_DO_PLANO,
+        cardName: cardInfo.cardName,
+        cardNumber: cardInfo.cardNumber,
+        securityNumber: Number(cardInfo.securityNumber),
+        expirationDate: cardInfo.expirationDate,
+      })
+    );
+    try {
+      const response = await fetch(
+        'https://mock-api.driven.com.br/api/v4/driven-plus/subscriptions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            membershipId: ID_DO_PLANO,
+            cardName: cardInfo.cardName,
+            cardNumber: cardInfo.cardNumber,
+            securityNumber: Number(cardInfo.securityNumber),
+            expirationDate: cardInfo.expirationDate,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        storedUser.membership = data;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+        navigate('/home');
+      } else {
+        alert('Falha ao confirmar a assinatura. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Error confirming subscription:', error);
+      alert(
+        'Ocorreu um erro ao confirmar a assinatura. Tente novamente mais tarde.'
+      );
+    }
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!subscriptionInfo.id) {
+    return <p>Plano não encontrado</p>;
+  }
+
   return (
     <>
-      {selectedPlan ? (
-        <PageContainer>
-          <TopBar>
-            <img src="/returnicon.svg" alt="" />
-          </TopBar>
-          <BoxContainer>
-            <img src={selectedPlan.img} alt="Planimage" />
-            <p>Driven Plus</p>
-          </BoxContainer>
-          <BoxContainer>
-            <TopicLine>
-              <img src="/benefitsicon.svg" alt="topicicon" />
-              Benefícios:
-            </TopicLine>
-            <DetailBox>
-              <ol>
-                {benefitsList.map((benefit, index) => (
-                  <li key={index}>{`${index + 1}. ${benefit}`}</li>
-                ))}
-              </ol>
-            </DetailBox>
+      <PageContainer>
+        <TopBar>
+          <img
+            src="/returnicon.svg"
+            alt="returnicon"
+            onClick={handleReturnClick}
+          />
+        </TopBar>
+        <BoxContainer>
+          <img src={subscriptionInfo.image} alt="Planimage" />
+          <p>{subscriptionInfo.name}</p>
+        </BoxContainer>
+        <BoxContainer>
+          <TopicLine>
+            <img src="/perkicon.svg" alt="topicicon" />
+            Benefícios:
+          </TopicLine>
+          <DetailBox>
+            <ol>
+              {subscriptionInfo.perks.map((perk) => (
+                <li key={perk.id}>
+                  <a href={perk.link} target="_blank" rel="noopener noreferrer">
+                    {perk.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </DetailBox>
 
-            <TopicLine>
-              <img src="/priceicon.svg" alt="topicicon" />
-              Preço:
-            </TopicLine>
-            <DetailBox>R$ {selectedPlan.price} cobrados mensalmente</DetailBox>
-          </BoxContainer>
-          <BoxContainer>
-            <InputContainer>
-              <input placeholder="Nome impresso no cartão" />
-              <input placeholder="Dígitos do cartão" />
-              <InputLine>
-                <input placeholder="Código de segurança" />
-                <input placeholder="Validade" />
-              </InputLine>
-              <button onClick={handleSubscribe}>ASSINAR</button>
-            </InputContainer>
-          </BoxContainer>
-          {showPopup && (
-            <>
-              <PopupContainer>
-                <PopupContent>
-                  <p>Tem certeza que deseja</p>
-                  <p>assinar o plano</p>
-                  <p>Driven Plus (R$ {subscriptionInfo.price})?</p>
-                  <PopupButtons>
-                    <CancelButton onClick={() => setShowPopup(false)}>
-                      Não
-                    </CancelButton>
-                    <StylizedLink
-                      to={`/home`}
-                      onClick={handleConfirmSubscription}
-                    >
-                      <button>SIM</button>
-                    </StylizedLink>
-                  </PopupButtons>
-                </PopupContent>
-              </PopupContainer>
-            </>
-          )}
-        </PageContainer>
-      ) : (
-        <p>Plano não encontrado</p>
-      )}
+          <TopicLine>
+            <img src="/priceicon.svg" alt="topicicon" />
+            Preço:
+          </TopicLine>
+          <DetailBox>
+            R$ {subscriptionInfo.price} cobrados mensalmente
+          </DetailBox>
+        </BoxContainer>
+        <BoxContainer>
+          <InputContainer>
+            <input
+              placeholder="Nome impresso no cartão"
+              name="cardName"
+              value={cardInfo.cardName}
+              onChange={handleCardInputChange}
+            />
+            <input
+              placeholder="Dígitos do cartão"
+              name="cardNumber"
+              value={cardInfo.cardNumber}
+              onChange={handleCardInputChange}
+            />
+            <InputLine>
+              <input
+                placeholder="Código de segurança"
+                name="securityNumber"
+                value={cardInfo.securityNumber}
+                onChange={handleCardInputChange}
+              />
+              <input
+                placeholder="Validade"
+                name="expirationDate"
+                value={cardInfo.expirationDate}
+                onChange={handleCardInputChange}
+              />
+            </InputLine>
+            <button onClick={handleSubscribe}>ASSINAR</button>
+          </InputContainer>
+        </BoxContainer>
+        {showPopup && (
+          <>
+            <PopupContainer>
+              <PopupContent>
+                <p>Tem certeza que deseja</p>
+                <p>assinar o plano</p>
+                <p>
+                  {subscriptionInfo.name} (R$ {subscriptionInfo.price})?
+                </p>
+                <PopupButtons>
+                  <CancelButton onClick={() => setShowPopup(false)}>
+                    Não
+                  </CancelButton>
+                  <button onClick={handleConfirmSubscription}>SIM</button>
+                </PopupButtons>
+              </PopupContent>
+            </PopupContainer>
+          </>
+        )}
+      </PageContainer>
     </>
   );
 }
@@ -187,6 +270,12 @@ const DetailBox = styled.div`
   ol {
     margin-top: 5px;
     margin-bottom: 10px;
+  }
+  a {
+    font-size: 14px;
+    font-family: 'Roboto';
+    color: #ffffff;
+    text-decoration-line: none;
   }
 `;
 
@@ -263,10 +352,4 @@ const CancelButton = styled.button`
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
-`;
-
-const StylizedLink = styled(Link)`
-  text-decoration: none;
-  color: inherit;
-  background: #ffffff;
 `;
