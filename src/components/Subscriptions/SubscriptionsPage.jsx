@@ -1,28 +1,50 @@
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export default function SubscriptionsPage() {
+  const [subscriptions, setSubscriptions] = useState([]);
+  const token = JSON.parse(localStorage.getItem('user')).token;
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        const response = await fetch(
+          'https://mock-api.driven.com.br/api/v4/driven-plus/subscriptions/memberships',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setSubscriptions(data);
+        } else {
+          console.error('Erro na requisição');
+        }
+      } catch (error) {
+        console.error('Erro na requisição:', error);
+      }
+    };
+
+    fetchSubscriptions();
+  }, [token]);
+
   return (
     <PageContainer>
       <p>Escolha seu Plano</p>
-      <StylizedLink to={`/subscriptions/${String(1)}`}>
-        <BoxContainer>
-          <img src="/DrivenPlus1.svg" alt="" />
-          <p>R$ 39,99</p>
-        </BoxContainer>
-      </StylizedLink>
-      <StylizedLink to={`/subscriptions/${String(2)}`}>
-        <BoxContainer>
-          <img src="/DrivenPlus2.svg" alt="" />
-          <p>R$ 69,99</p>
-        </BoxContainer>
-      </StylizedLink>
-      <StylizedLink to={`/subscriptions/${String(3)}`}>
-        <BoxContainer>
-          <img src="/DrivenPlus3.svg" alt="" />
-          <p>R$99,99</p>
-        </BoxContainer>
-      </StylizedLink>
+      {subscriptions.map((subscription) => (
+        <StylizedLink
+          key={subscription.id}
+          to={`/subscriptions/${subscription.id}`}
+        >
+          <BoxContainer>
+            <img src={subscription.image} alt="" />
+            <p>{`R$ ${subscription.price}`}</p>
+          </BoxContainer>
+        </StylizedLink>
+      ))}
     </PageContainer>
   );
 }
@@ -32,7 +54,7 @@ const PageContainer = styled.div`
   align-items: center;
   flex-direction: column;
   p {
-    font-family: "Roboto";
+    font-family: 'Roboto';
     font-size: 32px;
     font-weight: 400;
     margin-top: 30px;
@@ -51,7 +73,7 @@ const BoxContainer = styled.div`
   padding: 0 12px;
   margin-bottom: 10px;
   p {
-    font-family: "Roboto";
+    font-family: 'Roboto';
     font-size: 24px;
     font-weight: 700;
     color: #ffffff;
