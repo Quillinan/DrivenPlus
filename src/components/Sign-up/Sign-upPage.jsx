@@ -1,20 +1,80 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
+const API_URL =
+  'https://mock-api.driven.com.br/api/v4/driven-plus/auth/sign-up';
 
 export default function SignUpPage() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    cpf: '',
+    email: '',
+    password: '',
+  });
 
   const handleLoginClick = () => {
-    navigate("/");
+    navigate('/');
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        navigate('/');
+      } else {
+        alert('Ocorreu um erro no cadastro. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      alert('Ocorreu um erro na requisição. Tente novamente mais tarde.');
+    }
   };
 
   return (
     <PageContainer>
-      <input placeholder="Nome" />
-      <input placeholder="CPF" />
-      <input placeholder="E-mail" />
-      <input placeholder="Senha" />
-      <button>CADASTRAR</button>
+      <form onSubmit={handleSubmit}>
+        <input
+          name="name"
+          placeholder="Nome"
+          value={formData.name}
+          onChange={handleInputChange}
+        />
+        <input
+          name="cpf"
+          placeholder="CPF"
+          value={formData.cpf}
+          onChange={handleInputChange}
+        />
+        <input
+          name="email"
+          placeholder="E-mail"
+          value={formData.email}
+          onChange={handleInputChange}
+        />
+        <input
+          name="password"
+          placeholder="Senha"
+          type="password"
+          value={formData.password}
+          onChange={handleInputChange}
+        />
+        <button type="submit">CADASTRAR</button>
+      </form>
       <p onClick={handleLoginClick}>Já possui uma conta? Entre</p>
     </PageContainer>
   );
@@ -26,7 +86,7 @@ const PageContainer = styled.div`
   flex-direction: column;
   padding-top: 150px;
   p {
-    font-family: "Roboto";
+    font-family: 'Roboto';
     font-size: 14px;
     font-weight: 400;
     margin-top: 24px;
