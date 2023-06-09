@@ -57,15 +57,6 @@ export default function SubscriptionDetailsPage() {
   };
 
   const handleConfirmSubscription = async () => {
-    console.log(
-      JSON.stringify({
-        membershipId: ID_DO_PLANO,
-        cardName: cardInfo.cardName,
-        cardNumber: cardInfo.cardNumber,
-        securityNumber: Number(cardInfo.securityNumber),
-        expirationDate: cardInfo.expirationDate,
-      })
-    );
     try {
       const response = await fetch(
         'https://mock-api.driven.com.br/api/v4/driven-plus/subscriptions',

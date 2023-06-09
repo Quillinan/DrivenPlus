@@ -36,11 +36,15 @@ export default function HomePage() {
     navigate('/subscriptions');
   };
 
+  const handleIconClick = () => {
+    navigate(`/users/${user.id}`);
+  };
+
   return (
     <PageContainer>
       <Topbar>
         <PlanImg src={user.membership.image} alt="PlanImg" />
-        <UserImg src="/usericon.svg" alt="usericon" />
+        <UserImg src="/usericon.svg" alt="usericon" onClick={handleIconClick} />
       </Topbar>
       <p>Olá {user.name}</p>
       <ButtonsPlan>

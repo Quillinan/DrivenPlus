@@ -7,6 +7,8 @@ import SubscriptionsPage from './components/Subscriptions/SubscriptionsPage';
 import HomePage from './components/Home/HomePage';
 import SubscriptionDetailsPage from './components/SubscriptionDetails/SubscriptionDetailsPage';
 import { UserProvider } from './components/UserContext/UserContext';
+import UserPage from './components/User/User';
+import UpdateUserPage from './components/UpdateUser/UpdateUser';
 
 export default function App() {
   return (
@@ -23,6 +25,11 @@ export default function App() {
             element={<SubscriptionDetailsPage />}
           />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/users/:ID_DO_USUARIO" element={<UserPage />} />
+          <Route
+            path="/users/:ID_DO_USUARIO/update"
+            element={<UpdateUserPage />}
+          />
         </Routes>
       </BrowserRouter>
     </UserProvider>
