@@ -88,14 +88,14 @@ export default function SubscriptionDetailsPage() {
       if (response.ok) {
         const data = await response.json();
         const storedUser = JSON.parse(localStorage.getItem('user'));
-        storedUser.membership = data;
+        storedUser.membership = data.membership;
         localStorage.setItem('user', JSON.stringify(storedUser));
         navigate('/home');
       } else {
         alert('Falha ao confirmar a assinatura. Tente novamente.');
       }
     } catch (error) {
-      console.error('Error confirming subscription:', error);
+      console.error('Erro ao confirmar a assinatura:', error);
       alert(
         'Ocorreu um erro ao confirmar a assinatura. Tente novamente mais tarde.'
       );

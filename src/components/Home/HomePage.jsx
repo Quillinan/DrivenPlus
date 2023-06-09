@@ -1,43 +1,63 @@
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 export default function HomePage() {
-  const userPlan = 1;
-  const storedUser = JSON.parse(localStorage.getItem('user'));
-  console.log(storedUser);
+  const user = JSON.parse(localStorage.getItem('user'));
+  const navigate = useNavigate();
+  console.log(user);
 
-  const renderAdditionalButtons = () => {
-    if (userPlan === 2) {
-      return (
-        <>
-          <button>Aulas bônus de tech</button>
-        </>
+  const handleCancelPlan = async () => {
+    try {
+      const response = await fetch(
+        'https://mock-api.driven.com.br/api/v4/driven-plus/subscriptions',
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       );
-    } else if (userPlan === 3) {
-      return (
-        <>
-          <button>Aulas bônus de tech</button>
-          <button>Mentorias personalizadas</button>
-        </>
-      );
+
+      if (response.ok) {
+        user.membership = null;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        navigate('/subscriptions');
+      } else {
+        alert('Falha ao cancelar o plano. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      alert('Ocorreu um erro na requisição. Tente novamente mais tarde.');
     }
-    return null;
+  };
+
+  const handleChangePlan = () => {
+    navigate('/subscriptions');
   };
 
   return (
     <PageContainer>
       <Topbar>
-        <PlanImg src={`DrivenPlus${userPlan}.svg`} alt="PlanImg" />
+        <PlanImg src={user.membership.image} alt="PlanImg" />
         <UserImg src="/usericon.svg" alt="usericon" />
       </Topbar>
-      <p>Olá fulano</p>
+      <p>Olá {user.name}</p>
       <ButtonsPlan>
-        <button>Solicitar brindes</button>
-        <button>Materiais bônus de web</button>
-        {renderAdditionalButtons()}
+        {user.membership.perks.map((perk) => (
+          <a
+            key={perk.id}
+            href={perk.link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {perk.title}
+          </a>
+        ))}
       </ButtonsPlan>
       <Footer>
-        <button>Mudar plano</button>
-        <CancelButton>Cancelar plano</CancelButton>
+        <button onClick={handleChangePlan}>Mudar plano</button>
+        <CancelButton onClick={handleCancelPlan}>Cancelar plano</CancelButton>
       </Footer>
     </PageContainer>
   );
@@ -78,12 +98,29 @@ const ButtonsPlan = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 50px;
+  a {
+    height: 52px;
+    width: 300px;
+    background: #ff4791;
+    border-radius: 8px;
+    border-style: none;
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #ffffff;
+    margin-top: 8px;
+    text-decoration-line: none;
+  }
 `;
 
 const Footer = styled.div`
   display: flex;
   flex-direction: column;
-  top: 540px;
+  bottom: 12px;
   position: fixed;
 `;
 
