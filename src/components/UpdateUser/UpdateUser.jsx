@@ -116,7 +116,7 @@ export default function UpdateUserPage() {
         />
         <input
           name="newPassword"
-          placeholder="Nova senha"
+          placeholder="Nova senha (opcional)"
           value={formUser.newPassword}
           onChange={handleInputChange}
         />
@@ -130,14 +130,6 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  p {
-    font-family: 'Roboto';
-    font-size: 14px;
-    font-weight: 400;
-    margin-top: 24px;
-    text-decoration-line: underline;
-    color: #ffffff;
-  }
 `;
 
 const TopBar = styled.div`
