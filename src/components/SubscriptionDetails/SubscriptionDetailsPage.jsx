@@ -15,7 +15,6 @@ export default function SubscriptionDetailsPage() {
     expirationDate: '',
   });
   const navigate = useNavigate();
-  console.log(ID_DO_PLANO);
 
   useEffect(() => {
     const fetchSubscriptionInfo = async () => {

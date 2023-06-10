@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 export default function HomePage() {
   const user = JSON.parse(localStorage.getItem('user'));
   const navigate = useNavigate();
-  console.log(user);
 
   const handleCancelPlan = async () => {
     try {
@@ -40,10 +39,15 @@ export default function HomePage() {
     navigate(`/users/${user.id}`);
   };
 
+  const logout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
   return (
     <PageContainer>
       <Topbar>
-        <PlanImg src={user.membership.image} alt="PlanImg" />
+        <PlanImg src={user.membership.image} alt="PlanImg" onClick={logout} />
         <UserImg src="/usericon.svg" alt="usericon" onClick={handleIconClick} />
       </Topbar>
       <p>Olá {user.name}</p>

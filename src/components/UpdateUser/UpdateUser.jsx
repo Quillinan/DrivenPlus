@@ -14,7 +14,6 @@ export default function UpdateUserPage() {
     currentPassword: '',
     newPassword: '',
   });
-  console.log(user);
 
   const handleInputChange = (e) => {
     setFormUser({ ...formUser, [e.target.name]: e.target.value });

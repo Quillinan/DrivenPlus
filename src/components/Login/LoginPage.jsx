@@ -96,8 +96,8 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin-top: 134px;
   img {
-    margin-top: 30%;
     margin-bottom: 100px;
   }
   p {
