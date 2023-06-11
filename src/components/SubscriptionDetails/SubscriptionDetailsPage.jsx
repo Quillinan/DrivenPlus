@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import LoadingAnimation from '../Loading/Loading';
 
 export default function SubscriptionDetailsPage() {
   const { ID_DO_PLANO } = useParams();
   const [showPopup, setShowPopup] = useState(false);
   const [subscriptionInfo, setSubscriptionInfo] = useState({});
-  const [loading, setLoading] = useState(true);
   const token = JSON.parse(localStorage.getItem('user')).token;
   const [cardInfo, setCardInfo] = useState({
     cardName: '',
@@ -15,6 +15,7 @@ export default function SubscriptionDetailsPage() {
     expirationDate: '',
   });
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSubscriptionInfo = async () => {
@@ -33,9 +34,9 @@ export default function SubscriptionDetailsPage() {
         } else {
           console.error('Erro na requisição');
         }
-        setLoading(false);
       } catch (error) {
         console.error('Erro na requisição', error);
+      } finally {
         setLoading(false);
       }
     };
@@ -93,7 +94,7 @@ export default function SubscriptionDetailsPage() {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingAnimation />;
   }
 
   if (!subscriptionInfo.id) {

@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import LoadingAnimation from '../Loading/Loading';
 
 export default function SubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState([]);
   const token = JSON.parse(localStorage.getItem('user')).token;
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleBoxClick = (id) => {
+    navigate(`/subscriptions/${id}`);
+  };
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -25,25 +32,29 @@ export default function SubscriptionsPage() {
         }
       } catch (error) {
         console.error('Erro na requisição:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchSubscriptions();
   }, [token]);
 
+  if (loading) {
+    return <LoadingAnimation />;
+  }
+
   return (
     <PageContainer>
       <p>Escolha seu Plano</p>
       {subscriptions.map((subscription) => (
-        <StylizedLink
+        <BoxContainer
           key={subscription.id}
-          to={`/subscriptions/${subscription.id}`}
+          onClick={() => handleBoxClick(subscription.id)}
         >
-          <BoxContainer>
-            <img src={subscription.image} alt="" />
-            <p>{`R$ ${subscription.price}`}</p>
-          </BoxContainer>
-        </StylizedLink>
+          <img src={subscription.image} alt="" />
+          <p>{`R$ ${subscription.price}`}</p>
+        </BoxContainer>
       ))}
     </PageContainer>
   );
@@ -81,7 +92,7 @@ const BoxContainer = styled.div`
   }
 `;
 
-const StylizedLink = styled(Link)`
-  text-decoration: none;
-  color: inherit;
-`;
+// const StylizedLink = styled(Link)`
+//   text-decoration: none;
+//   color: inherit;
+// `;

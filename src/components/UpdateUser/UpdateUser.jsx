@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import LoadingAnimation from '../Loading/Loading';
 
 const API_URL = 'https://mock-api.driven.com.br/api/v4/driven-plus/users/';
 
@@ -14,6 +15,7 @@ export default function UpdateUserPage() {
     currentPassword: '',
     newPassword: '',
   });
+  const [loading, setLoading] = useState(true);
 
   const handleInputChange = (e) => {
     setFormUser({ ...formUser, [e.target.name]: e.target.value });
@@ -76,8 +78,14 @@ export default function UpdateUserPage() {
       alert(
         'Ocorreu um erro ao processar a solicitação. Tente novamente mais tarde.'
       );
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <PageContainer>

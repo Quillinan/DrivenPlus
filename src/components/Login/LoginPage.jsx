@@ -2,6 +2,7 @@ import { useEffect, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../UserContext/UserContext';
+import LoadingAnimation from '../Loading/Loading';
 
 const API_URL = 'https://mock-api.driven.com.br/api/v4/driven-plus/auth/login';
 
@@ -12,6 +13,7 @@ export default function LoginPage() {
     password: '',
   });
   const { setUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,6 +48,8 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Erro na requisição:', error);
       alert('Ocorreu um erro na requisição. Tente novamente mais tarde.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,6 +71,10 @@ export default function LoginPage() {
       }
     }
   }, [navigate, setUser]);
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <PageContainer>
